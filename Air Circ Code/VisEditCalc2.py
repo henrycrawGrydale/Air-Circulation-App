@@ -387,8 +387,13 @@ class VisCalculation(VisEditCalc2):
         self.timeslctEntry = ttk.Entry(self.frame)
         self.edittimeBtn = ttk.Button(self.frame, text='Enter',command= self.Edittime)
         self.timeslctEntry.insert(0,100)
-        
-        
+        self.progresslabel = ttk.Label(self.frame, text="Calculating Graph, Please Wait...", font=("Helvetica", 14))
+        self.progresslabel.pack(pady=20)
+
+        # Create a progress bar widget
+        self.progress = ttk.Progressbar(self.frame, orient=HORIZONTAL, length=200, mode='indeterminate')
+        self.progress.pack(pady=10)
+            
     def ShowOutputs(self):
         self.DoCalc(self.CalcObj.dt)
         self.ShowGraphs()
@@ -445,6 +450,9 @@ class VisCalculation(VisEditCalc2):
         j = 0 # Volume Index
         self.DiluCONOx = np.zeros((self.ZArr.size,self.TimeArr.size))
         for z in self.ZArr:
+            self.progress.step(1)
+            self.master.update_idletasks()
+            self.progresslabel.config(text = "Calculating CO and NOX")
             for Time in self.TimeArr:
                
                 
@@ -453,13 +461,16 @@ class VisCalculation(VisEditCalc2):
                 j = j + 1
             i = i + 1
             j = 0
-        
+       
     
         # Calculate Dilution Times for Dust
         i = 0 # Time Index
         j = 0 # Volume Index
         self.DiluDust = np.zeros((self.ZArr.size,self.TimeArr.size))
         for z in self.ZArr:
+            self.progress.step(1)
+            self.master.update_idletasks()
+            self.progresslabel.config(text = "Calculating Dust")
             for Time in self.TimeArr:
                 
                 self.DiluDust[i,j] = (dusttve/(2*CrossSection* sqrt(pi*D*Time)))*(exp((-(z-(vel*(Time*60)))**2)/(4*D*Time)))*100000
